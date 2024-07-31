@@ -1,44 +1,54 @@
 #logica de la app para crear los metodos mi papacho 
-from rest_framework.views import APIView
-from rest_framework import status 
-from rest_framework.response import Response
-
-from apps.users.api.serializer import UserRegisterSerializer,UserSerializer, UserUpdateSerializer
-
-
-from apps.users.models import User
-
-
 from rest_framework.permissions import IsAuthenticated
-
-#registrar usuarios
-class RegisterAPIView(APIView):
-    #override del metodo post
-    def post(self, request):
-        serializer = UserRegisterSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True): #si llega a haber un error no retorne mano
-            serializer.save() #SI es valido entonces guardelo en el modelo 
-            return Response(serializer.data, status=status.HTTP_201_CREATED) #restorna respuesta
+from rest_framework.views import APIView
+from rest_framework import status
+from apps.users.models import User
+from rest_framework.response import Response
+from apps.users.api.serializer import UserSerializer,UserUpdate,UserGetSerializer
+from rest_framework import serializers
 
 
-        return Response(serializer.errros, status=status.HTTP_400_BAD_REQUEST) #si hay error en los datos retorne el error
-
-
-
-#listar datos del usuario
+class UserRegisterView(APIView):
+    def post(self,request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            response_data = {
+                "message": "Usuario Registrado Exitosamente",
+                "data": serializer.data
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED,)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
 class UserView(APIView):
-    permission_classes = [IsAuthenticated]
-    #override del metodo get 
+  
     def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
-    #override del metodo actualizar
-    def put(self, request):
-        user = User.objects.get(pk=request.user.id)
-        serializer = UserUpdateSerializer(user, request.data)
-
+        users = User.objects.all()
+        serializer = UserGetSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+class UserUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+    def put(self,request):
+        user=User.objects.get(pk=request.user.id)
+        serializer = UserUpdate(user,request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+        
 
+class UserDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self,request):
+        request.user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class EnumRolView(APIView):
+    enumRol = serializers.SerializerMethodField()
+    def get(self,request):
+        return Response(User.enumRol)
+class EnumTipoIdView(APIView):
+    enumTipo = serializers.SerializerMethodField()   
+    def get(self,request):
+        return Response(User.enumTipo)             

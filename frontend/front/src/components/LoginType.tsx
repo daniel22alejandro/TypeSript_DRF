@@ -4,41 +4,41 @@ import { useState } from "react";
 import { useForm } from "react-hook-form"; 
 import { useNavigate } from "@tanstack/react-router"; 
 
-// Definimos el tipo de datos que esperamos recibir del formulario
+
 type Response = {
-  username: string; // Nombre de usuario
-  password: string; // Contraseña
+  numero_documento: string; 
+  password: string; 
 };
 
-// Definimos el componente funcional de inicio de sesión
-const LoginComponent = () => {
-  const navigate = useNavigate(); // Hook para cambiar de rutas
-  const [messageError, setErrorMessage] = useState(""); // Estado para manejar mensajes de error
 
-  // Configuración del hook de react-hook-form para gestionar el formulario
+const LoginComponent = () => {
+  const navigate = useNavigate(); 
+  const [messageError, setErrorMessage] = useState("");
+  
+
   const {
-    register, // Función para registrar los campos del formulario
-    handleSubmit, // Función para manejar el envío del formulario
-    formState: { errors }, // Estado del formulario y errores
-  } = useForm<Response>(); // Inicializamos el hook con el tipo de datos esperado
+    register, 
+    handleSubmit, 
+    formState: { errors }, 
+  } = useForm<Response>(); 
 
   // Configuración del hook de react-query para manejar la mutación del login
   const useMutationLogin = useMutation({
-    mutationFn: login, // Función que realiza la operación de login
+    mutationFn: login, 
     onSuccess: (data) => {
-      console.log("Usuario autorizado", data); // Mensaje en consola si el login es exitoso
-      navigate({ to: "/home" }); // Redirige a la página de inicio (ruta /home) en caso de éxito
+      console.log("Usuario autorizado", data); 
+      navigate({ to: "/home" }); 
     },
     onError: (error: Error) => {
-      console.log("Error:", error.message); // Mensaje en consola si hay un error
-      setErrorMessage(error.message); // Establece el mensaje de error para mostrarlo en la interfaz
+      console.log("Error:", error.message);
+      setErrorMessage(error.message);
     },
   });
 
   // Función que se llama al enviar el formulario
   const onsubmitData = (data: Response) => {
     useMutationLogin.mutate(data); // Ejecuta la mutación de login con los datos del formulario
-    console.log("", data); // Mensaje en consola con los datos enviados
+    console.log("", data); 
   };
 
   // Renderizado condicional del mensaje de error
@@ -67,17 +67,17 @@ const LoginComponent = () => {
           <input
             className="text-black h-10 rounded-lg border border-gray-300 p-2"
             type="text"
-            id="username"
+            id="numero_documento"
             placeholder="Usuario"
-            {...register("username", {
+            {...register("numero_documento", {
               required: {
                 value: true,
                 message: "El nombre de usuario es obligatorio",
               },
             })}
           />
-          {errors.username && (
-            <p className="text-red-500">{errors.username.message}</p>
+          {errors.numero_documento && (
+            <p className="text-red-500">{errors.numero_documento.message}</p>
           )}
           <label className="font-semibold">Contraseña:</label>
           <input
@@ -105,5 +105,5 @@ const LoginComponent = () => {
   );
 };
 
-// Exportamos el componente para que pueda ser utilizado en otras partes de la aplicación
+
 export default LoginComponent;

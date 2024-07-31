@@ -1,10 +1,26 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.models import AbstractUser #registrar y autenticar usuarios
-
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
-
+    cedula_ciudadania='Cedula ciudadania'
+    tarjeta_identidad='Tarjeta de identidad'
+    Nit ='Nit'
+    enumTipo=[
+    (cedula_ciudadania,'Cedula ciudadania'),
+    (tarjeta_identidad,'Tarjeta de identidad'),
+    (Nit,'Nit'),
+    ]
+    administrador='Administrador'
+    encargado='Encargado'
+    invitado='Invitado'
+    enumRol=[
+        (administrador,'Administrador'),
+        (encargado,'Encargado'),
+        (invitado,'Invitado'),
+    ]
+    tipo_documento=models.CharField(max_length=21,choices=enumTipo,null=False,verbose_name='Tipo documento')
+    numero_documento = models.BigIntegerField(null=True,unique=True)
+    rol= models.CharField(max_length=21, choices=enumRol, null=False,verbose_name='Rol') 
+    USERNAME_FIELD="numero_documento"
+    REQUIRED_FIELDS=[]
+    
